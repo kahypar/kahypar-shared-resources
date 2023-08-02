@@ -26,8 +26,8 @@
 
 #pragma once
 
-#include "kahypar/meta/mandatory.h"
-#include "kahypar/meta/typelist.h"
+#include "kahypar-resources/meta/mandatory.h"
+#include "kahypar-resources/meta/typelist.h"
 
 namespace kahypar {
 namespace meta {

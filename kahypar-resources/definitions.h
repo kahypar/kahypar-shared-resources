@@ -24,59 +24,28 @@
  * SOFTWARE.
  ******************************************************************************/
 
+
 #pragma once
 
-#include <memory>
-#include <string>
-#include <unordered_map>
+#include <chrono>
+#include <cstdint>
+#include <utility>
 
-#include "kahypar-resources/macros.h"
+// Use bucket PQ for FM refinement.
+// #define USE_BUCKET_QUEUE
 
 namespace kahypar {
-namespace meta {
-class PolicyBase {
- public:
-  PolicyBase() = default;
+using HypernodeID = uint32_t;
+using HyperedgeID = uint32_t;
+using HypernodeWeight = int32_t;
+using HyperedgeWeight = int32_t;
+using PartitionID = int32_t;
+using Gain = HyperedgeWeight;
 
-  PolicyBase(const PolicyBase&) = default;
-  PolicyBase& operator= (const PolicyBase&) = default;
+// #########Graph-Definitions#############
+using NodeID = HypernodeID;
+using EdgeID = HyperedgeID;
+using EdgeWeight = long double;
+using ClusterID = PartitionID;
 
-  PolicyBase(PolicyBase&&) = default;
-  PolicyBase& operator= (PolicyBase&&) = default;
-
-  virtual ~PolicyBase() = default;
-};
-
-template <typename IDType>
-class PolicyRegistry {
- private:
-  using PolicyBasePtr = std::unique_ptr<PolicyBase>;
-  using UnderlyingIDType = typename std::underlying_type_t<IDType>;
-  using PolicyMap = std::unordered_map<UnderlyingIDType, PolicyBasePtr>;
-
- public:
-  bool registerObject(const IDType& name, PolicyBase* policy) {
-    return _policies.emplace(
-      static_cast<UnderlyingIDType>(name), PolicyBasePtr(policy)).second;
-  }
-  static PolicyRegistry & getInstance() {
-    static PolicyRegistry instance;
-    return instance;
-  }
-
-  PolicyBase & getPolicy(const IDType& name) {
-    const auto it = _policies.find(static_cast<UnderlyingIDType>(name));
-    if (it != _policies.end()) {
-      return *(it->second.get());
-    }
-    LOG << "Invalid policy identifier";
-    std::exit(-1);
-  }
-
- private:
-  PolicyRegistry() :
-    _policies() { }
-  PolicyMap _policies;
-};
-}  // namespace meta
 }  // namespace kahypar

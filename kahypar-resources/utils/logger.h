@@ -3,7 +3,7 @@
  *
  * This file is part of KaHyPar.
  *
- * Copyright (C) 2015 Sebastian Schlag <sebastian.schlag@kit.edu>
+ * Copyright (C) 2015-2017 Sebastian Schlag <sebastian.schlag@kit.edu>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,57 +26,68 @@
 
 #pragma once
 
-#include <memory>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 #include <string>
-#include <unordered_map>
 
-#include "kahypar-resources/macros.h"
+#include "kahypar-resources/meta/pack_expand.h"
 
 namespace kahypar {
-namespace meta {
-class PolicyBase {
+class Logger {
  public:
-  PolicyBase() = default;
+  explicit Logger(const bool newline) :
+    _newline(newline),
+    _oss() { }
 
-  PolicyBase(const PolicyBase&) = default;
-  PolicyBase& operator= (const PolicyBase&) = default;
-
-  PolicyBase(PolicyBase&&) = default;
-  PolicyBase& operator= (PolicyBase&&) = default;
-
-  virtual ~PolicyBase() = default;
-};
-
-template <typename IDType>
-class PolicyRegistry {
- private:
-  using PolicyBasePtr = std::unique_ptr<PolicyBase>;
-  using UnderlyingIDType = typename std::underlying_type_t<IDType>;
-  using PolicyMap = std::unordered_map<UnderlyingIDType, PolicyBasePtr>;
-
- public:
-  bool registerObject(const IDType& name, PolicyBase* policy) {
-    return _policies.emplace(
-      static_cast<UnderlyingIDType>(name), PolicyBasePtr(policy)).second;
-  }
-  static PolicyRegistry & getInstance() {
-    static PolicyRegistry instance;
-    return instance;
+  template <typename Arg, typename ... Args>
+  Logger(const bool newline, Arg&& arg, Args&& ... args) :
+    _newline(newline),
+    _oss() {
+    _oss << "[" << std::forward<Arg>(arg);
+    meta::expandPack((_oss << ":" << std::forward<Args>(args)) ...);
+    _oss << "]: ";
   }
 
-  PolicyBase & getPolicy(const IDType& name) {
-    const auto it = _policies.find(static_cast<UnderlyingIDType>(name));
-    if (it != _policies.end()) {
-      return *(it->second.get());
+  template <typename T>
+  Logger& operator<< (const T& output) {
+    _oss << output << ' ';
+    return *this;
+  }
+
+  template <typename T>
+  Logger& operator<< (const T* output) {
+    _oss << output << ' ';
+    return *this;
+  }
+
+
+  Logger& operator<< (decltype(std::left)& output) {
+    _oss << output;
+    return *this;
+  }
+
+  Logger& operator<< (const decltype(std::setw(1))& output) {
+    _oss << output;
+    return *this;
+  }
+
+  ~Logger() {
+    std::cout << _oss.str();
+    if (_newline) {
+      std::cout << std::endl;
+    } else {
+      std::cout << ' ';
     }
-    LOG << "Invalid policy identifier";
-    std::exit(-1);
   }
 
  private:
-  PolicyRegistry() :
-    _policies() { }
-  PolicyMap _policies;
+  bool _newline;
+  std::ostringstream _oss;
 };
-}  // namespace meta
+
+class LoggerVoidify {
+ public:
+  void operator& (Logger&) { }
+};
 }  // namespace kahypar

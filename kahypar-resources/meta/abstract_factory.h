@@ -29,10 +29,10 @@
 #include <memory>
 #include <unordered_map>
 
-#include "kahypar/macros.h"
-#include "kahypar/meta/function_traits.h"
-#include "kahypar/meta/mandatory.h"
-#include "kahypar/meta/template_parameter_to_string.h"
+#include "kahypar-resources/macros.h"
+#include "kahypar-resources/meta/function_traits.h"
+#include "kahypar-resources/meta/mandatory.h"
+#include "kahypar-resources/meta/template_parameter_to_string.h"
 
 
 namespace kahypar {
