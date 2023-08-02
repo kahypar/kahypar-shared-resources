@@ -291,12 +291,6 @@ class KWayPriorityQueue {
   }
 
  private:
-  FRIEND_TEST(AKWayPriorityQueue, DisablesInternalHeapIfItBecomesEmptyDueToRemoval);
-  FRIEND_TEST(AKWayPriorityQueue, ChoosesMaxKeyAmongAllEnabledInternalHeaps);
-  FRIEND_TEST(AKWayPriorityQueue, DoesNotConsiderDisabledHeapForChoosingMax);
-  FRIEND_TEST(AKWayPriorityQueue, ReconsidersDisabledHeapAgainAfterEnabling);
-  FRIEND_TEST(AKWayPriorityQueue, PQIsUnusedAndDisableIfItBecomesEmptyAfterDeleteMaxFromPartition);
-
   KAHYPAR_ATTRIBUTE_ALWAYS_INLINE void swap(const size_t index_a, const size_t index_b) {
     using std::swap;
     swap(_queues[index_a], _queues[index_b]);
