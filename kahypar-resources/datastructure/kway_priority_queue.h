@@ -310,7 +310,7 @@ class KWayPriorityQueue {
 
   KAHYPAR_ATTRIBUTE_ALWAYS_INLINE size_t maxIndex() const {
     size_t max_index = kInvalidIndex;
-    KeyType max_key = MetaKey::min();
+    KeyType max_key = MetaKey::lowest();
     for (size_t index = 0; index < _num_enabled_pqs; ++index) {
       ASSERT(!_queues[index].empty(), V(index));
       const KeyType key = _queues[index].topKey();
@@ -324,7 +324,7 @@ class KWayPriorityQueue {
   }
 
   KAHYPAR_ATTRIBUTE_ALWAYS_INLINE size_t maxIndexRandomTieBreaking() {
-    KeyType max_key = MetaKey::min();
+    KeyType max_key = MetaKey::lowest();
     for (size_t index = 0; index < _num_enabled_pqs; ++index) {
       ASSERT(!_queues[index].empty(), V(index));
       const KeyType key = _queues[index].topKey();
