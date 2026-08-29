@@ -56,13 +56,14 @@ class KWayPriorityQueue {
   };
 
  public:
-  explicit KWayPriorityQueue(const PartitionID k) :
+  explicit KWayPriorityQueue(const PartitionID k, Randomize& rng) :
     _queues(),
     _mapping(k +  /* sentinel */ 1, { kInvalidPart, kInvalidIndex }),
     _ties(k),
     _num_entries(0),
     _num_nonempty_pqs(0),
-    _num_enabled_pqs(0) { }
+    _num_enabled_pqs(0),
+    _rng(rng) { }
 
   KWayPriorityQueue(const KWayPriorityQueue&) = delete;
   KWayPriorityQueue& operator= (const KWayPriorityQueue&) = delete;
@@ -336,7 +337,7 @@ class KWayPriorityQueue {
         _ties.push_back(index);
       }
     }
-    return _ties[Randomize::instance().getRandomInt(0, _ties.size() - 1)];
+    return _ties[_rng.getRandomInt(0, _ties.size() - 1)];
   }
 
   KAHYPAR_ATTRIBUTE_ALWAYS_INLINE bool isUnused(const PartitionID part) const {
@@ -355,6 +356,7 @@ class KWayPriorityQueue {
   size_t _num_entries;
   size_t _num_nonempty_pqs;
   size_t _num_enabled_pqs;
+  Randomize& _rng;
 };
 }  // namespace ds
 }  // namespace kahypar

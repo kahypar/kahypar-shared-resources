@@ -35,15 +35,18 @@
 namespace kahypar {
 class Randomize {
  public:
+  Randomize() :
+    _seed(-1),
+    _gen(),
+    _bool_dist(0, 1),
+    _int_dist(0, std::numeric_limits<int>::max()),
+    _float_dist(0, 1),
+    _norm_dist(0, 1) { }
+
   Randomize(const Randomize&) = delete;
   Randomize(Randomize&&) = delete;
   Randomize& operator= (const Randomize&) = delete;
   Randomize& operator= (Randomize&&) = delete;
-
-  static Randomize & instance() {
-    static Randomize instance;
-    return instance;
-  }
 
   bool flipCoin() {
     return static_cast<bool>(_bool_dist(_gen));
@@ -87,16 +90,6 @@ class Randomize {
   }
 
  private:
-  Randomize() :
-    _seed(-1),
-    _gen(),
-    _bool_dist(0, 1),
-    _int_dist(0, std::numeric_limits<int>::max()),
-    _float_dist(0, 1),
-    _norm_dist(0, 1) { }
-
-  ~Randomize() = default;
-
   int _seed = -1;
   std::mt19937 _gen;
   std::uniform_int_distribution<int> _bool_dist;
